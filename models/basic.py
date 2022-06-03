@@ -1,4 +1,5 @@
 import pygame
+import os
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from pygame.locals import *
@@ -7,7 +8,6 @@ triangleVAO, program = None, None
 def getFileContents(filename):
     p = os.path.join(os.getcwd(), "shaders", filename)
     return open(p, 'r').read()
-
 
 def init():
     global triangleVAO, program
