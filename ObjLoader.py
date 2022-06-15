@@ -61,3 +61,43 @@ class ObjLoader:
 
 
     
+    def load_model(file, sorted=True):
+        vert_coords = [] # will contain all the vertex coordinates
+        tex_coords = [] # will contain all the texture coordinates
+        norm_coords = [] # will contain all the vertex normals
+
+        all_indices = [] # will contain all the vertex, texture and normal indices
+        indices = [] # will contain the indices for indexed drawing
+
+        with open(file, 'r') as f:
+            line = f.readline()
+            while line:
+                values = line.split()
+                if values[0] == 'v':
+                    ObjLoader.search_data(values, vert_coords, 'v', 'float')
+                elif values[0] == 'vt':
+                    ObjLoader.search_data(values, tex_coords, 'vt', 'float')
+                elif values[0] == 'vn':
+                    ObjLoader.search_data(values, norm_coords, 'vn', 'float')
+                elif values[0] == 'f':
+                    for value in values[1:]:
+                        val = value.split('/')
+                        ObjLoader.search_data(val, all_indices, 'f', 'int')
+                        indices.append(int(val[0])-1)
+
+                line = f.readline()
+
+        if sorted:
+            # use with glDrawArrays
+            ObjLoader.create_sorted_vertex_buffer(all_indices, vert_coords, tex_coords, norm_coords)
+        else:
+            # use with glDrawElements
+            ObjLoader.create_unsorted_vertex_buffer(all_indices, vert_coords, tex_coords, norm_coords)
+
+        # ObjLoader.show_buffer_data(ObjLoader.buffer)
+
+        buffer = ObjLoader.buffer.copy() # create a local copy of the buffer list, otherwise it will overwrite the static field buffer
+        ObjLoader.buffer = [] # after copy, make sure to set it back to an empty list
+
+        return np.array(indices, dtype='uint32'), np.array(buffer, dtype='float32')
+
