@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class ObjLoader:
     buffer = []
 
@@ -30,15 +29,12 @@ class ObjLoader:
                 end = start + 3
                 ObjLoader.buffer.extend(normals[start:end])
 
-
     def create_unsorted_vertex_buffer(indices_data, vertices, textures, normals):
         num_verts = len(vertices) // 3
-
         for i1 in range(num_verts):
             start = i1 * 3
             end = start + 3
             ObjLoader.buffer.extend(vertices[start:end])
-
             for i2, data in enumerate(indices_data):
                 if i2 % 3 == 0 and data == i1:
                     start = indices_data[i2 + 1] * 2
@@ -48,10 +44,7 @@ class ObjLoader:
                     start = indices_data[i2 + 2] * 3
                     end = start + 3
                     ObjLoader.buffer.extend(normals[start:end])
-
                     break
-
-
     
     def show_buffer_data(buffer):
         for i in range(len(buffer)//8):
@@ -59,15 +52,12 @@ class ObjLoader:
             end = start + 8
             print(buffer[start:end])
 
-
-    
     def load_model(file, sorted=True):
-        vert_coords = [] # will contain all the vertex coordinates
-        tex_coords = [] # will contain all the texture coordinates
-        norm_coords = [] # will contain all the vertex normals
-
-        all_indices = [] # will contain all the vertex, texture and normal indices
-        indices = [] # will contain the indices for indexed drawing
+        vert_coords = [] 
+        tex_coords = [] 
+        norm_coords = [] 
+        all_indices = [] 
+        indices = [] 
 
         with open(file, 'r') as f:
             line = f.readline()
@@ -91,13 +81,11 @@ class ObjLoader:
             # use with glDrawArrays
             ObjLoader.create_sorted_vertex_buffer(all_indices, vert_coords, tex_coords, norm_coords)
         else:
-            # use with glDrawElements
             ObjLoader.create_unsorted_vertex_buffer(all_indices, vert_coords, tex_coords, norm_coords)
 
-        # ObjLoader.show_buffer_data(ObjLoader.buffer)
 
-        buffer = ObjLoader.buffer.copy() # create a local copy of the buffer list, otherwise it will overwrite the static field buffer
-        ObjLoader.buffer = [] # after copy, make sure to set it back to an empty list
+        buffer = ObjLoader.buffer.copy() 
+        ObjLoader.buffer = [] 
 
         return np.array(indices, dtype='uint32'), np.array(buffer, dtype='float32')
 
